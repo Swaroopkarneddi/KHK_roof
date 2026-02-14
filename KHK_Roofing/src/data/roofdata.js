@@ -1,0 +1,33 @@
+export const roofData = [
+  {
+    id: "metal-sheet",
+    label: "Metal Roofing",
+    subTypes: [
+      {
+        id: "corrugated",
+        label: "Corrugated",
+        minWidth: 2,
+        maxWidth: 4,
+        minLength: 5,
+        maxLength: 20,
+        customSize: true,
+      },
+      {
+        id: "standing-seam",
+        label: "Standing Seam",
+        minWidth: 1,
+        maxWidth: 2,
+        minLength: 10,
+        maxLength: 40,
+        customSize: false,
+      },
+    ],
+  },
+  // Add more types here in the future
+];
+
+export const accessoryList = [
+  { id: "screws", label: "Screws (per sheet)", price: 0.5 },
+  { id: "caps", label: "Ridge Caps", price: 15.0 },
+  { id: "sealant", label: "Sealant Tape", price: 8.0 },
+];
