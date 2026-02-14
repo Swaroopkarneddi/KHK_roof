@@ -14,9 +14,11 @@ const InvoiceTable = ({
   if (!results)
     return (
       <div className="invoice-container">
-        <h2>Invoice</h2>
+        <header className="invoice-header">
+          <h2>Roofing Quote / Invoice</h2>
+        </header>
         <p className="placeholder">
-          Calculate dimensions to generate the quote.
+          Enter dimensions and click <strong>Calculate & Generate Invoice</strong> to see your quote.
         </p>
       </div>
     );
@@ -31,22 +33,25 @@ const InvoiceTable = ({
         <h2>Roofing Quote / Invoice</h2>
       </header>
 
-      <table className="invoice-table">
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="invoice-table-wrap">
+        <table className="invoice-table">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
           {results.sheetLengths ? (
             results.sheetLengths.map((row, i) => {
               const rowArea = row.lengthFt * results.sheetWidthFt * row.count;
               const rowSubtotal = rowArea * results.pricePerUnit;
               return (
                 <tr key={i}>
+                  <td>{i + 1}</td>
                   <td>
                     Sheet: {results.sheetWidthFt}ft × {row.lengthFt.toFixed(2)}
                     ft
@@ -59,6 +64,7 @@ const InvoiceTable = ({
             })
           ) : (
             <tr>
+              <td>1</td>
               <td>{results.type} Sheets</td>
               <td>{results.count}</td>
               <td>{results.pricePerUnit}/pc</td>
@@ -66,23 +72,30 @@ const InvoiceTable = ({
             </tr>
           )}
 
-          {selectedAccessories.map((acc, i) => (
-            <tr key={`acc-${i}`} className="accessory-row">
-              <td>{acc.label}</td>
-              <td>{results.count}</td>
-              <td>{acc.price}/unit</td>
-              <td>{formatCurrency(acc.price * results.count)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          {selectedAccessories.map((acc, i) => {
+            const baseCount = results.sheetLengths
+              ? results.sheetLengths.length
+              : 1;
+            return (
+              <tr key={`acc-${i}`} className="accessory-row">
+                <td>{baseCount + i + 1}</td>
+                <td>{acc.label}</td>
+                <td>{results.count}</td>
+                <td>{acc.price}/unit</td>
+                <td>{formatCurrency(acc.price * results.count)}</td>
+              </tr>
+            );
+          })}
+          </tbody>
+        </table>
+      </div>
 
       <div className="invoice-summary">
         <div className="summary-row total">
-          <span>Grand Total:</span>
+          <span>Grand Total</span>
           <span>{formatCurrency(totalPrice)}</span>
         </div>
-        <button className="print-btn no-print" onClick={() => window.print()}>
+        <button type="button" className="print-btn no-print" onClick={() => window.print()}>
           Download PDF
         </button>
       </div>

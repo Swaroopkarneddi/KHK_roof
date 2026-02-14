@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Roof Sheet Calculator</h1>
+      <h1 className="app-title">Roof Sheet Calculator</h1>
       <div className="main-layout">
         <div className="input-side">
           <InputSection formData={formData} setFormData={setFormData} />
