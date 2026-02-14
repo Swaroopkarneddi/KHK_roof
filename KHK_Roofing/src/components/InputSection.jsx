@@ -23,7 +23,9 @@ const InputSection = ({ formData, setFormData }) => {
       <h3 className="card-title">Dimensions & Type</h3>
 
       <div className="form-group">
-        <label className="form-label" htmlFor="roof-type">Roof type</label>
+        <label className="form-label" htmlFor="roof-type">
+          Roof type
+        </label>
         <select
           id="roof-type"
           value={formData.type ?? ""}
@@ -41,7 +43,9 @@ const InputSection = ({ formData, setFormData }) => {
 
       {selectedType && subTypes.length > 0 && (
         <div className="form-group">
-          <label className="form-label" htmlFor="sub-type">Sub-type</label>
+          <label className="form-label" htmlFor="sub-type">
+            Sub-type
+          </label>
           <select
             id="sub-type"
             value={formData.subType ?? ""}
@@ -60,7 +64,9 @@ const InputSection = ({ formData, setFormData }) => {
 
       <div className="dimensions-grid">
         <div className="form-group">
-          <label className="form-label" htmlFor="width">Width</label>
+          <label className="form-label" htmlFor="width">
+            Width
+          </label>
           <input
             id="width"
             type="number"
@@ -73,7 +79,9 @@ const InputSection = ({ formData, setFormData }) => {
           />
         </div>
         <div className="form-group">
-          <label className="form-label" htmlFor="length">Length</label>
+          <label className="form-label" htmlFor="length">
+            Length
+          </label>
           <input
             id="length"
             type="number"
@@ -86,7 +94,9 @@ const InputSection = ({ formData, setFormData }) => {
           />
         </div>
         <div className="form-group form-group-full">
-          <label className="form-label" htmlFor="unit">Unit</label>
+          <label className="form-label" htmlFor="unit">
+            Unit
+          </label>
           <select
             id="unit"
             value={formData.unit ?? "ft"}
@@ -100,7 +110,9 @@ const InputSection = ({ formData, setFormData }) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label" htmlFor="price">Price per unit (₹)</label>
+        <label className="form-label" htmlFor="price">
+          Price per unit (₹)
+        </label>
         <input
           id="price"
           type="number"
