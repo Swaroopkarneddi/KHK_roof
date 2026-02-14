@@ -1,5 +1,10 @@
 import React from "react";
 
+const formatCurrency = (num) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
+    num,
+  );
+
 const InvoiceTable = ({
   results,
   selectedAccIds,
@@ -9,8 +14,10 @@ const InvoiceTable = ({
   if (!results)
     return (
       <div className="invoice-container">
-        <h2>Quote</h2>
-        <p>Please calculate to see results.</p>
+        <h2>Invoice</h2>
+        <p className="placeholder">
+          Calculate dimensions to generate the quote.
+        </p>
       </div>
     );
 
@@ -20,7 +27,10 @@ const InvoiceTable = ({
 
   return (
     <div className="invoice-container">
-      <h2>Roofing Quote / Invoice</h2>
+      <header className="invoice-header">
+        <h2>Roofing Quote / Invoice</h2>
+      </header>
+
       <table className="invoice-table">
         <thead>
           <tr>
@@ -34,16 +44,16 @@ const InvoiceTable = ({
           {results.sheetLengths ? (
             results.sheetLengths.map((row, i) => {
               const rowArea = row.lengthFt * results.sheetWidthFt * row.count;
-              const rowPrice = rowArea * results.pricePerUnit;
+              const rowSubtotal = rowArea * results.pricePerUnit;
               return (
                 <tr key={i}>
                   <td>
-                    Sheet: {results.sheetWidthFt}ft x {row.lengthFt.toFixed(2)}
+                    Sheet: {results.sheetWidthFt}ft × {row.lengthFt.toFixed(2)}
                     ft
                   </td>
                   <td>{row.count}</td>
-                  <td>₹{results.pricePerUnit}/sqft</td>
-                  <td>₹{rowPrice.toFixed(2)}</td>
+                  <td>{results.pricePerUnit}/sqft</td>
+                  <td>{formatCurrency(rowSubtotal)}</td>
                 </tr>
               );
             })
@@ -51,22 +61,30 @@ const InvoiceTable = ({
             <tr>
               <td>{results.type} Sheets</td>
               <td>{results.count}</td>
-              <td>₹{results.pricePerUnit}/pc</td>
-              <td>₹{(results.count * results.pricePerUnit).toFixed(2)}</td>
+              <td>{results.pricePerUnit}/pc</td>
+              <td>{formatCurrency(results.totalBasePrice)}</td>
             </tr>
           )}
+
           {selectedAccessories.map((acc, i) => (
             <tr key={`acc-${i}`} className="accessory-row">
               <td>{acc.label}</td>
               <td>{results.count}</td>
-              <td>₹{acc.price}</td>
-              <td>₹{(acc.price * results.count).toFixed(2)}</td>
+              <td>{acc.price}/unit</td>
+              <td>{formatCurrency(acc.price * results.count)}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="total-section">
-        <h3>Grand Total: ₹{totalPrice.toLocaleString("en-IN")}</h3>
+
+      <div className="invoice-summary">
+        <div className="summary-row total">
+          <span>Grand Total:</span>
+          <span>{formatCurrency(totalPrice)}</span>
+        </div>
+        <button className="print-btn no-print" onClick={() => window.print()}>
+          Download PDF
+        </button>
       </div>
     </div>
   );
