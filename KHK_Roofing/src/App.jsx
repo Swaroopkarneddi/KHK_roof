@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import InputSection from "./components/InputSection";
 import AccessorySelector from "./components/AccessorySelector";
 import InvoiceTable from "./components/InvoiceTable";
@@ -22,17 +22,16 @@ function App() {
   const handleCalculate = useCallback(() => {
     setCalcError(null);
     try {
-      const width = formData.width === "" ? 0 : Number(formData.width);
-      const length = formData.length === "" ? 0 : Number(formData.length);
-      const price = formData.price === "" ? 0 : Number(formData.price);
+      const { type, subType, width, length, unit, price } = formData;
 
-      const calc = calculateSheets(
-        formData.type,
-        formData.subType,
-        width,
-        length,
-        formData.unit,
-      );
+      // Validate basic inputs
+      if (!type || !subType || !width || !length || !price) {
+        setCalcError("Please fill in all fields, including price.");
+        setResults(null);
+        return;
+      }
+
+      const calc = calculateSheets(type, subType, width, length, unit, price);
 
       if (calc.error) {
         setCalcError(calc.error);
@@ -40,28 +39,29 @@ function App() {
         return;
       }
 
-      setResults({
-        ...formData,
-        width,
-        length,
-        price,
-        ...calc,
-      });
+      setResults(calc);
     } catch (err) {
-      setCalcError(err?.message || "Something went wrong.");
+      setCalcError("Something went wrong with the calculation.");
       setResults(null);
     }
   }, [formData]);
 
-  const totalPrice = (() => {
+  // useMemo for performance - recalculates only when results or selectedAcc changes
+  const totalPrice = useMemo(() => {
     if (!results) return 0;
-    const sheetTotal = (results.count ?? 0) * (results.price ?? 0);
-    const accessoryTotal = (selectedAcc || []).reduce((sum, id) => {
-      const acc = accessoryList?.find((a) => a.id === id);
-      return sum + (acc?.price ?? 0);
+
+    // 1. Base Price from Sheets (already calculated in utils)
+    const basePrice = results.totalBasePrice || 0;
+
+    // 2. Accessory Price (multiplied by sheet count)
+    const accessoryTotal = selectedAcc.reduce((sum, id) => {
+      const acc = accessoryList.find((a) => a.id === id);
+      // Assuming accessories are quantity per total sheets
+      return sum + (acc ? acc.price * (results.count || 1) : 0);
     }, 0);
-    return Number((sheetTotal + accessoryTotal).toFixed(2));
-  })();
+
+    return Number((basePrice + accessoryTotal).toFixed(2));
+  }, [results, selectedAcc]);
 
   return (
     <div className="container">
@@ -73,15 +73,14 @@ function App() {
             selectedAcc={selectedAcc}
             setSelectedAcc={setSelectedAcc}
           />
-          {calcError && (
-            <div className="error-message" role="alert">
-              {calcError}
-            </div>
-          )}
+
+          {calcError && <div className="error-message">{calcError}</div>}
+
           <button className="calc-btn" onClick={handleCalculate}>
             Calculate & Generate Invoice
           </button>
         </div>
+
         <div className="output-side">
           <InvoiceTable
             results={results}
