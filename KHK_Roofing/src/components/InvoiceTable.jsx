@@ -5,6 +5,12 @@ const formatNum = (n) => {
   return Number(n);
 };
 
+const formatDecimal = (n, decimals = 2) => {
+  const num = Number(n);
+  if (n == null || Number.isNaN(num)) return "—";
+  return num.toFixed(decimals);
+};
+
 const InvoiceTable = ({
   results,
   selectedAccIds = [],
@@ -31,6 +37,8 @@ const InvoiceTable = ({
   const sheetWidthFt = results.sheetWidthFt;
 
   const sheetTotal = count * price;
+  const typeDisplay =
+    [results.type, results.subType].filter(Boolean).join(" – ") || "—";
   const list = Array.isArray(accessoryList) ? accessoryList : [];
   const accessoryLabels = (Array.isArray(selectedAccIds) ? selectedAccIds : [])
     .map((id) => list.find((a) => a?.id === id))
@@ -56,34 +64,32 @@ const InvoiceTable = ({
             sheetLengths.map((row, idx) => {
               const rowSheets = row.count ?? 0;
               const rowPaidSqFt =
-                row.lengthFt * (sheetWidthFt ?? 3.71) * rowSheets;
+                (row.lengthFt ?? 0) * (sheetWidthFt ?? 3.71) * rowSheets;
               const rowPrice = rowSheets * price;
               return (
                 <tr key={`sheet-${idx}`}>
                   <td>{idx + 1}</td>
-                  <td>
-                    {idx === 0 ? (results.subType ?? "Single Side") : "—"}
-                  </td>
+                  <td>{typeDisplay}</td>
                   <td>
                     {formatNum(sheetWidthFt)} × {formatNum(row.lengthFt)} ft
                   </td>
                   <td>{formatNum(rowSheets)}</td>
-                  <td>{formatNum(rowPaidSqFt.toFixed(2))} sq ft</td>
-                  <td>₹{Number(rowPrice).toFixed(2)}</td>
+                  <td>{formatDecimal(rowPaidSqFt)} sq ft</td>
+                  <td>₹{formatDecimal(rowPrice)}</td>
                 </tr>
               );
             })
           ) : (
             <tr>
               <td>1</td>
-              <td>{results.subType ?? "—"}</td>
+              <td>{typeDisplay}</td>
               <td>
                 {formatNum(results.width)} × {formatNum(results.length)}{" "}
                 {results.unit ?? "ft"}
               </td>
               <td>{formatNum(count)}</td>
-              <td>{formatNum(results.area)} m²</td>
-              <td>₹{Number(sheetTotal).toFixed(2)}</td>
+              <td>{formatDecimal(results.area)} m²</td>
+              <td>₹{formatDecimal(sheetTotal)}</td>
             </tr>
           )}
         </tbody>
@@ -107,19 +113,17 @@ const InvoiceTable = ({
           </p>
           <p>
             <strong>Total paid area:</strong>{" "}
-            {formatNum(Number(results.totalPaidAreaSqFt).toFixed(2))} sq ft
+            {formatDecimal(results.totalPaidAreaSqFt)} sq ft
           </p>
           <p>
             <strong>Actual roof area:</strong>{" "}
-            {formatNum(Number(results.actualAreaSqFt).toFixed(2))} sq ft
+            {formatDecimal(results.actualAreaSqFt)} sq ft
           </p>
           <p>
             <strong>Extra (overlap & wastage):</strong>{" "}
-            {formatNum(
-              (
-                Number(results.totalPaidAreaSqFt) -
-                Number(results.actualAreaSqFt)
-              ).toFixed(2),
+            {formatDecimal(
+              Number(results.totalPaidAreaSqFt) -
+                Number(results.actualAreaSqFt),
             )}{" "}
             sq ft
           </p>
@@ -137,9 +141,7 @@ const InvoiceTable = ({
         </ul>
       </div>
 
-      <h3 className="total">
-        Total Estimate: ₹{Number(totalPrice).toFixed(2)}
-      </h3>
+      <h3 className="total">Total Estimate: ₹{formatDecimal(totalPrice)}</h3>
       <button
         type="button"
         onClick={() => window.print()}
