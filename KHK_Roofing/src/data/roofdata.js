@@ -1,11 +1,11 @@
 export const roofData = [
   {
-    id: "metal-sheet",
-    label: "Metal Roofing",
+    id: "Trapezoidal",
+    label: "Trapezoidal",
     subTypes: [
       {
-        id: "corrugated",
-        label: "Corrugated",
+        id: "Single Side",
+        label: "Single Side",
         minWidth: 2,
         maxWidth: 4,
         minLength: 5,
@@ -13,8 +13,8 @@ export const roofData = [
         customSize: true,
       },
       {
-        id: "standing-seam",
-        label: "Standing Seam",
+        id: "AType",
+        label: "AType",
         minWidth: 1,
         maxWidth: 2,
         minLength: 10,
