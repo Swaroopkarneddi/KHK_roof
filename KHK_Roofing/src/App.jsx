@@ -45,8 +45,7 @@ function App() {
         width,
         length,
         price,
-        count: calc.count,
-        area: calc.area,
+        ...calc,
       });
     } catch (err) {
       setCalcError(err?.message || "Something went wrong.");
